@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.3 Vacation Planner Dashboard</title>
+    
+    <!-- Tailwind CSS for Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts: Prompt for Thai typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tab-btn { transition: all 0.2s; }
+        .tab-active { background-color: white; color: #1d4ed8; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+        .tab-inactive { color: #475569; }
+        .tab-inactive:hover { background-color: #e2e8f0; color: #0f172a; }
+        
+        /* Hide scrollbar for clean horizontal scrolling */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 pb-12">
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-plane-departure text-blue-600"></i>
+                        M.3 Vacation Planner
+                    </h1>
+                    <p class="text-sm text-slate-500 mt-1">แผนผังวันหยุดและช่วงสอบ สำหรับนักเรียน ม.3 (ปีการศึกษา 2569)</p>
+                </div>
+                <div class="hidden sm:block text-right">
+                    <span class="block text-xs text-slate-500 uppercase tracking-wider font-semibold">Total Long Breaks</span>
+                    <span class="text-2xl font-black text-blue-600">4 <span class="text-sm text-slate-500 font-normal">Trips</span></span>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="flex mt-6 space-x-1 bg-slate-100 p-1 rounded-lg w-full max-w-2xl overflow-x-auto hide-scrollbar">
+                <button onclick="switchTab('trips')" id="btn-trips" class="tab-btn tab-active flex-1 py-2 px-4 text-sm font-medium rounded-md whitespace-nowrap">
+                    <i class="fa-solid fa-map-location-dot mr-1 text-blue-600"></i> แผนจองทริป (Golden Trips)
+                </button>
+                <button onclick="switchTab('ai')" id="btn-ai" class="tab-btn tab-inactive flex-1 py-2 px-4 text-sm font-medium rounded-md whitespace-nowrap">
+                    <i class="fa-solid fa-wand-magic-sparkles text-purple-500 mr-1"></i> จัดทริปด้วย AI
+                </button>
+                <button onclick="switchTab('timeline')" id="btn-timeline" class="tab-btn tab-inactive flex-1 py-2 px-4 text-sm font-medium rounded-md whitespace-nowrap">
+                    <i class="fa-regular fa-calendar-days mr-1 text-slate-600"></i> ปฏิทินตลอดปี (อัปเดตแล้ว)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        
+        <!-- TAB 1: TRIPS -->
+        <div id="tab-trips" class="space-y-6 fade-in block">
+            <!-- Warning Alert for Exams -->
+            <div class="bg-rose-50 border border-rose-200 rounded-xl p-4 flex gap-4 items-start shadow-sm">
+                <div class="bg-rose-100 p-2 rounded-full mt-1 shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-700 text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-rose-900">ข้อควรระวัง! ห้ามจองตั๋วช่วงนี้เด็ดขาด (ช่วงสอบ ม.3)</h3>
+                    <p class="text-sm text-rose-800 mt-1">
+                        <b>สอบเทอม 1:</b> 21 ก.ย. - 6 ต.ค. 69 (อาจมีสอบแก้ตัว 14-22 ต.ค.)<br/>
+                        <b>สอบเทอม 2:</b> 15 ก.พ. - 2 มี.ค. 70 (อาจมีสอบแก้ตัว 8-19 มี.ค.)
+                    </p>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 mt-8 mb-4">
+                <i class="fa-solid fa-star text-amber-500"></i> ทริปทองคำที่แนะนำ (Golden Periods)
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Trip 1 -->
+                <div class="bg-gradient-to-br from-amber-100 to-orange-50 border border-amber-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-white p-2 rounded-xl shadow-sm w-10 h-10 flex items-center justify-center">
+                            <i class="fa-solid fa-umbrella-beach text-amber-500 text-xl"></i>
+                        </div>
+                        <span class="bg-white/60 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-amber-700 border border-white/50">หยุดยาว 9 วัน</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">ทริปเคลียร์สมองกลางเทอม 1</h3>
+                    <p class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar text-slate-500"></i> 25 ก.ค. - 2 ส.ค. 2569
+                    </p>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed h-20">
+                        วันหยุดราชการ 3 วันติด (เฉลิมฯ ร.10, อาสาฬหบูชา, เข้าพรรษา) แนะนำให้ลาเพิ่มหัวท้ายนิดหน่อย จะได้หยุดยาวสะใจ 9 วัน
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 border border-white/50 text-sm">
+                        <span class="font-semibold block text-slate-800 mb-1">💡 เทคนิคการลา:</span>
+                        <span class="text-slate-700">ลาโรงเรียนเพิ่ม 2 วัน (จันทร์ 27 ก.ค. และ ศุกร์ 31 ก.ค.)</span>
+                    </div>
+                    <button onclick="goToAI('1')" class="mt-4 w-full bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> ให้ AI ช่วยจัดทริปนี้
+                    </button>
+                </div>
+
+                <!-- Trip 2 -->
+                <div class="bg-gradient-to-br from-blue-100 to-cyan-50 border border-blue-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-white p-2 rounded-xl shadow-sm w-10 h-10 flex items-center justify-center">
+                            <i class="fa-solid fa-trophy text-blue-500 text-xl"></i>
+                        </div>
+                        <span class="bg-white/60 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-blue-700 border border-white/50">หยุดแบบยืดหยุ่น</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">ทริปชิลๆ ช่วงกีฬาสี</h3>
+                    <p class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar text-slate-500"></i> 12 ต.ค. - 30 ต.ค. 2569
+                    </p>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed h-20">
+                        ช่วงงานกีฬาสาธิตสามัคคี โรงเรียนมักไม่มีการเรียนปกติ หากลูกไม่ได้เป็นนักกีฬา ช่วงเวลานี้เหมาะจัดทริปยาวๆ หลังสอบเสร็จ
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 border border-white/50 text-sm">
+                        <span class="font-semibold block text-slate-800 mb-1">💡 เทคนิคการลา:</span>
+                        <span class="text-slate-700">ใช้ช่วงวันหยุดต่อเนื่อง 12-14 ต.ค. เชื่อมกับสัปดาห์กีฬาสี</span>
+                    </div>
+                    <button onclick="goToAI('2')" class="mt-4 w-full bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> ให้ AI ช่วยจัดทริปนี้
+                    </button>
+                </div>
+
+                <!-- Trip 3 -->
+                <div class="bg-gradient-to-br from-emerald-100 to-teal-50 border border-emerald-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-white p-2 rounded-xl shadow-sm w-10 h-10 flex items-center justify-center">
+                            <i class="fa-solid fa-plane-departure text-emerald-500 text-xl"></i>
+                        </div>
+                        <span class="bg-white/60 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-emerald-700 border border-white/50">หยุดยาว 16 วัน</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Super Golden Week</h3>
+                    <p class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar text-slate-500"></i> 19 ธ.ค. 2569 - 3 ม.ค. 2570
+                    </p>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed h-20">
+                        โรงเรียนปิดย่อยระหว่างภาคเรียน ชนกับช่วงหยุดยาวปีใหม่พอดี! ไม่ต้องลาเพิ่มสักวัน เหมาะมากสำหรับทริปยุโรปหรือญี่ปุ่นช่วงหิมะ
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 border border-white/50 text-sm">
+                        <span class="font-semibold block text-slate-800 mb-1">💡 เทคนิคการลา:</span>
+                        <span class="text-slate-700">ไม่ต้องลาเพิ่ม! โรงเรียนประกาศหยุดเป็นทางการยาวๆ</span>
+                    </div>
+                    <button onclick="goToAI('3')" class="mt-4 w-full bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> ให้ AI ช่วยจัดทริปนี้
+                    </button>
+                </div>
+
+                <!-- Trip 4 -->
+                <div class="bg-gradient-to-br from-rose-100 to-pink-50 border border-rose-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="bg-white p-2 rounded-xl shadow-sm w-10 h-10 flex items-center justify-center">
+                            <i class="fa-solid fa-sun text-rose-500 text-xl"></i>
+                        </div>
+                        <span class="bg-white/60 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-rose-700 border border-white/50">หยุดยาว 2 เดือน+</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">ทริปปิดเทอมใหญ่ ซัมเมอร์</h3>
+                    <p class="text-sm font-semibold text-slate-700 mb-3 flex items-center gap-1.5">
+                        <i class="fa-regular fa-calendar text-slate-500"></i> 3 มี.ค. 2570 เป็นต้นไป
+                    </p>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed h-20">
+                        สอบปลายภาคเทอม 2 เสร็จสิ้น จัดทริปยาวได้แบบไร้กังวล (เว้นแต่ลูกมีสอบแก้ตัวช่วง 8-19 มี.ค. 70)
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 border border-white/50 text-sm">
+                        <span class="font-semibold block text-slate-800 mb-1">💡 เทคนิคการลา:</span>
+                        <span class="text-slate-700">ปิดเทอมใหญ่</span>
+                    </div>
+                    <button onclick="goToAI('4')" class="mt-4 w-full bg-white hover:bg-slate-50 text-slate-700 text-sm font-medium py-2 px-4 rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i> ให้ AI ช่วยจัดทริปนี้
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: AI ASSISTANT -->
+        <div id="tab-ai" class="hidden space-y-6 fade-in">
+            <div class="bg-gradient-to-r from-purple-50 to-fuchsia-50 border border-purple-100 rounded-2xl p-6 shadow-sm">
+                <h2 class="text-xl font-bold text-purple-900 flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-robot text-purple-600"></i> Gemini Trip Generator
+                </h2>
+                <p class="text-sm text-purple-700 mb-6">ระบุความต้องการของคุณ แล้วให้ระบบจำลองจัดแผนการเดินทางที่เหมาะกับเด็ก ม.3 ให้อัตโนมัติ</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="space-y-1">
+                        <label class="text-sm font-semibold text-slate-700">เลือกช่วงเวลา (Golden Trip)</label>
+                        <select id="ai-trip-select" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                            <option value="1">ทริปเคลียร์สมองกลางเทอม 1 (9 วัน)</option>
+                            <option value="2">ทริปชิลๆ ช่วงกีฬาสี (แบบยืดหยุ่น)</option>
+                            <option value="3">Super Golden Week (เคาท์ดาวน์) (16 วัน)</option>
+                            <option value="4">ทริปปิดเทอมใหญ่ ซัมเมอร์ (2 เดือน+)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-semibold text-slate-700">จุดหมายปลายทาง</label>
+                        <input type="text" id="ai-dest" placeholder="เช่น ญี่ปุ่น (โอซาก้า), สิงคโปร์, ภูเก็ต" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 outline-none" />
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-sm font-semibold text-slate-700">งบประมาณต่อคน</label>
+                        <select id="ai-budget" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 outline-none">
+                            <option>ประหยัด (ต่ำกว่า 15,000 บาท)</option>
+                            <option selected>ปานกลาง (15,000 - 30,000 บาท)</option>
+                            <option>พรีเมียม (30,000 - 60,000 บาท)</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-1 md:col-span-2">
+                        <label class="text-sm font-semibold text-slate-700">ความสนใจพิเศษของลูก ม.3</label>
+                        <textarea id="ai-pref" placeholder="เช่น ชอบสวนสนุก, เน้นกินของอร่อย, อยากไปคาเฟ่ถ่ายรูป..." rows="2" class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 outline-none resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div id="ai-error" class="hidden mt-4 p-3 bg-rose-50 text-rose-700 text-sm rounded-lg border border-rose-200">
+                    <i class="fa-solid fa-circle-exclamation mr-1"></i> กรุณาระบุจุดหมายปลายทางครับ
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="generateTrip()" id="btn-generate" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition-all flex items-center gap-2">
+                        <i id="ai-icon" class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span id="ai-text">สร้างแผนการเดินทางเลย!</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Box -->
+            <div id="ai-result-box" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 relative overflow-hidden fade-in">
+                <i class="fa-solid fa-robot absolute top-4 right-4 text-8xl text-slate-100 opacity-50"></i>
+                <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2 border-b pb-4 relative z-10">
+                    <i class="fa-solid fa-map-location text-purple-600"></i> แผนการเดินทางจำลองของคุณ
+                </h3>
+                <div id="ai-content" class="text-sm leading-relaxed text-slate-700 space-y-3 relative z-10">
+                    <!-- Content will be injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: TIMELINE -->
+        <div id="tab-timeline" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 fade-in">
+            <div class="flex items-start justify-between mb-8 border-b pb-4">
+                <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-days text-blue-600"></i> ปฏิทินวิชาการ ม.3 (ฉบับสมบูรณ์)
+                </h2>
+                <div class="hidden sm:flex gap-2">
+                    <span class="px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-md">เที่ยวได้</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-rose-100 text-rose-700 rounded-md">ห้ามลา</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-md">กิจกรรม รร.</span>
+                </div>
+            </div>
+            
+            <div class="relative border-l-2 border-slate-100 ml-3 md:ml-4 space-y-10" id="timeline-container">
+                <!-- Timeline items will be injected via JS -->
+            </div>
+        </div>
+        
+    </main>
+
+    <script>
+        // --- Complete Comprehensive Data Extracted from Images for M.3 ---
+        const timelineData = [
+            { 
+                month: "เมษายน - พฤษภาคม 2569", 
+                events: [
+                    { date: "20 เม.ย. - 15 พ.ค.", title: "เรียนภาคฤดูร้อน/เตรียมความพร้อม", type: "school" },
+                    { date: "4 พ.ค.", title: "หยุดวันฉัตรมงคล", type: "holiday" }
+                ] 
+            },
+            { 
+                month: "มิถุนายน 2569", 
+                events: [
+                    { date: "1 มิ.ย.", title: "หยุดชดเชยวันวิสาขบูชา", type: "holiday", highlight: true },
+                    { date: "3 มิ.ย.", title: "หยุดวันเฉลิมฯ พระราชินี", type: "holiday" },
+                    { date: "8 มิ.ย.", title: "เปิดภาคเรียนที่ 1 ปีการศึกษา 2569", type: "school", highlight: true }
+                ] 
+            },
+            { 
+                month: "กรกฎาคม 2569", 
+                events: [
+                    { date: "3 ก.ค.", title: "วันสถาปนาโรงเรียน", type: "school" },
+                    { date: "5 ก.ค.", title: "พิธีมอบเกียรติบัตรและทุนเรียนดี", type: "school" },
+                    { date: "28 ก.ค.", title: "หยุดวันเฉลิมฯ ร.10", type: "holiday", highlight: true },
+                    { date: "29 ก.ค.", title: "หยุดวันอาสาฬหบูชา", type: "holiday", highlight: true },
+                    { date: "30 ก.ค.", title: "หยุดวันเข้าพรรษา", type: "holiday", highlight: true }
+                ] 
+            },
+            { 
+                month: "สิงหาคม 2569", 
+                events: [
+                    { date: "12 ส.ค.", title: "หยุดวันแม่แห่งชาติ", type: "holiday" },
+                    { date: "16 ส.ค.", title: "งานไซเบอร์เฉลิมพระเกียรติ", type: "school" },
+                    { date: "23 ส.ค.", title: "ประชุมผู้ปกครอง ม.1 - ม.6", type: "school" }
+                ] 
+            },
+            { 
+                month: "กันยายน 2569", 
+                events: [
+                    { date: "21 - 25 ก.ย.", title: "สอบปลายภาค เทอม 1 (รอบที่ 1)", type: "exam" },
+                    { date: "30 ก.ย. - 6 ต.ค.", title: "สอบปลายภาค เทอม 1 (รอบที่ 2)", type: "exam" }
+                ] 
+            },
+            { 
+                month: "ตุลาคม 2569", 
+                events: [
+                    { date: "7 ต.ค.", title: "เปิดภาคเรียนที่ 2", type: "school", highlight: true },
+                    { date: "12 - 14 ต.ค.", title: "หยุดคล้ายวันสวรรคต ร.9 และหยุดเพิ่ม", type: "holiday", highlight: true },
+                    { date: "14 - 22 ต.ค.", title: "ตารางสอบแก้ตัว ภาคเรียนที่ 1", type: "exam" },
+                    { date: "15 - 30 ต.ค.", title: "งานกีฬาสาธิตสามัคคี ครั้งที่ 49", type: "school", highlight: true },
+                    { date: "23 ต.ค.", title: "หยุดวันปิยมหาราช", type: "holiday" }
+                ] 
+            },
+            { 
+                month: "ธันวาคม 2569", 
+                events: [
+                    { date: "7 ธ.ค.", title: "หยุดชดเชยวันพ่อแห่งชาติ", type: "holiday" },
+                    { date: "21 - 30 ธ.ค.", title: "ปิดระหว่างภาคเรียนที่ 2 (ปิดย่อย)", type: "holiday", highlight: true },
+                    { date: "31 ธ.ค.", title: "หยุดวันสิ้นปี", type: "holiday", highlight: true }
+                ] 
+            },
+            { 
+                month: "มกราคม 2570", 
+                events: [
+                    { date: "1 ม.ค.", title: "หยุดวันขึ้นปีใหม่", type: "holiday", highlight: true }
+                ] 
+            },
+            { 
+                month: "กุมภาพันธ์ 2570", 
+                events: [
+                    { date: "15 - 19 ก.พ.", title: "สอบปลายภาค เทอม 2 (รอบที่ 1)", type: "exam" },
+                    { date: "22 ก.พ.", title: "หยุดชดเชยวันมาฆบูชา", type: "holiday" },
+                    { date: "24 ก.พ. - 2 มี.ค.", title: "สอบปลายภาค เทอม 2 (รอบที่ 2)", type: "exam" }
+                ] 
+            },
+            { 
+                month: "มีนาคม 2570", 
+                events: [
+                    { date: "8 - 19 มี.ค.", title: "ตารางสอบแก้ตัว ม.1-ม.5 ภาคเรียนที่ 2", type: "exam" }
+                ] 
+            }
+        ];
+
+        // --- Tab Switching Logic ---
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.getElementById('tab-trips').classList.add('hidden');
+            document.getElementById('tab-trips').classList.remove('block');
+            document.getElementById('tab-ai').classList.add('hidden');
+            document.getElementById('tab-ai').classList.remove('block');
+            document.getElementById('tab-timeline').classList.add('hidden');
+            document.getElementById('tab-timeline').classList.remove('block');
+            
+            // Reset button styles
+            document.getElementById('btn-trips').className = 'tab-btn tab-inactive flex-1 py-2 px-4 text-sm font-medium rounded-md whitespace-nowrap';
+            document.getElementById('btn-ai').className = 'tab-btn tab-inactive flex-1 py-2 px-4 text-sm font-medium rounded-md whitespace-nowrap';
+            document.getElementById('btn-timeline').className = 'tab-btn tab-inactive flex-1 py-2 px-4 text-sm font-medium rounded-md whitespace-nowrap';
+            
+            // Show active tab
+            const activeContent = document.getElementById('tab-' + tabId);
+            activeContent.classList.remove('hidden');
+            activeContent.classList.add('block');
+            
+            // Highlight active button
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('tab-inactive');
+            activeBtn.classList.add('tab-active');
+        }
+
+        function goToAI(tripId) {
+            document.getElementById('ai-trip-select').value = tripId;
+            switchTab('ai');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- AI Trip Logic ---
+        function generateTrip() {
+            const dest = document.getElementById('ai-dest').value.trim();
+            const pref = document.getElementById('ai-pref').value.trim();
+            const errorBox = document.getElementById('ai-error');
+            const btn = document.getElementById('btn-generate');
+            const icon = document.getElementById('ai-icon');
+            const text = document.getElementById('ai-text');
+            const resultBox = document.getElementById('ai-result-box');
+            const content = document.getElementById('ai-content');
+
+            if (!dest) {
+                errorBox.classList.remove('hidden');
+                return;
+            }
+            errorBox.classList.add('hidden');
+            resultBox.classList.add('hidden');
+
+            // Loading state
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            icon.className = 'fa-solid fa-spinner fa-spin';
+            text.innerText = 'กำลังประมวลผลทริป...';
+
+            // Simulate API Call
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                icon.className = 'fa-solid fa-wand-magic-sparkles';
+                text.innerText = 'สร้างแผนการเดินทางใหม่';
+                
+                resultBox.classList.remove('hidden');
+                
+                const tripSelect = document.getElementById('ai-trip-select');
+                const tripName = tripSelect.options[tripSelect.selectedIndex].text;
+                const activityText = pref ? \`และจัดตารางให้ตรงกับความสนใจ: <b>\${pref}</b>\` : "และจัดตารางแบบชิลๆ เหมาะกับวัยรุ่น";
+                
+                content.innerHTML = \`
+                    <p class="text-lg text-purple-900 border-b pb-2"><strong>ทริปครอบครัว: ตะลุย \${dest}</strong></p>
+                    <p class="mt-3"><strong>ช่วงเวลาที่เหมาะสม:</strong> \${tripName}</p>
+                    <p><strong>ทำไมถึงเหมาะกับช่วงเวลานี้?</strong><br>
+                    เพราะเป็นช่วงที่โรงเรียนมีวันหยุดต่อเนื่อง ทำให้ลูก ม.3 ได้พักผ่อนอย่างเต็มที่หลังจากการเรียนและสอบที่หนักหน่วง โดยไม่ต้องกังวลเรื่องการเรียนตามไม่ทัน</p>
+                    <div class="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <p class="font-bold text-purple-700 mb-2">ตัวอย่างแผนการเดินทาง (Mockup)</p>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li><strong>วันที่ 1:</strong> เดินทางถึง \${dest} เช็คอินเข้าที่พัก และพาไปเดินเล่นทำความคุ้นเคยกับพื้นที่ แวะคาเฟ่ฮิตๆ ที่วัยรุ่นชอบ</li>
+                            <li><strong>วันที่ 2:</strong> เยี่ยมชมแลนด์มาร์คสำคัญ \${activityText} (เตรียมจุดถ่ายรูปทำคอนเทนต์ลง IG/TikTok ให้ลูก)</li>
+                            <li><strong>วันที่ 3:</strong> อิสระช้อปปิ้ง หรือแยกย้ายทำกิจกรรมตามอัธยาศัย</li>
+                        </ul>
+                    </div>
+                    <p class="mt-4 p-3 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-100">
+                        <i class="fa-solid fa-lightbulb mr-1 text-amber-500"></i>
+                        <strong>ทริคดูแลลูกวัยรุ่น ม.3:</strong> ให้อิสระลูกได้มีส่วนร่วมในการตัดสินใจเลือกร้านอาหารหรือสถานที่ท่องเที่ยวในทริปนี้ด้วย จะทำให้เขาเอ็นจอยและลดความขัดแย้งระหว่างทริปได้มากครับ!
+                    </p>
+                \`;
+            }, 1200);
+        }
+
+        function getEventIcon(type) {
+            if(type === 'holiday') return '<i class="fa-solid fa-plane text-emerald-600"></i>';
+            if(type === 'exam') return '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i>';
+            return '<i class="fa-solid fa-book-open text-blue-600"></i>';
+        }
+
+        function getEventBadge(type) {
+            if(type === 'holiday') return '<span class="px-2 py-1 text-xs font-medium bg-emerald-100 text-emerald-700 rounded-full whitespace-nowrap">เที่ยวได้</span>';
+            if(type === 'exam') return '<span class="px-2 py-1 text-xs font-medium bg-rose-100 text-rose-700 rounded-full whitespace-nowrap">ห้ามลา</span>';
+            return '<span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-full whitespace-nowrap">กิจกรรม</span>';
+        }
+
+        function renderTimeline() {
+            const container = document.getElementById('timeline-container');
+            let html = '';
+            
+            timelineData.forEach(data => {
+                const monthShort = data.month.split(' ')[0].substring(0, 3);
+                let eventsHtml = '';
+                
+                data.events.forEach(evt => {
+                    const highlightClass = evt.highlight ? 'bg-amber-50 border border-amber-200 shadow-sm' : 'bg-slate-50 border border-slate-100 hover:bg-white hover:shadow-sm';
+                    const iconBg = evt.type === 'exam' ? 'bg-rose-100' : evt.type === 'holiday' ? 'bg-emerald-100' : 'bg-blue-100';
+                    const textCol = evt.type === 'exam' ? 'text-rose-700 font-bold' : evt.highlight ? 'text-amber-800 font-bold' : 'text-slate-700';
+                    
+                    eventsHtml += \`
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 rounded-xl transition-all \${highlightClass}">
+                            <div class="flex items-center gap-3 w-44 shrink-0">
+                                <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0 \${iconBg}">
+                                    \${getEventIcon(evt.type)}
+                                </div>
+                                <span class="font-semibold text-sm text-slate-800">\${evt.date}</span>
+                            </div>
+                            <div class="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <span class="text-sm \${textCol}">\${evt.title}</span>
+                                <div class="self-start sm:self-auto">\${getEventBadge(evt.type)}</div>
+                            </div>
+                        </div>
+                    \`;
+                });
+
+                html += \`
+                    <div class="relative">
+                        <div class="absolute -left-[25px] bg-white border-2 border-slate-200 text-slate-500 rounded-full w-12 h-12 flex items-center justify-center font-bold text-xs shadow-sm z-10">
+                            \${monthShort}
+                        </div>
+                        <div class="pl-10">
+                            <h3 class="text-lg font-bold text-slate-800 mb-4">\${data.month}</h3>
+                            <div class="space-y-3">
+                                \${eventsHtml}
+                            </div>
+                        </div>
+                    </div>
+                \`;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Render timeline immediately on load to ensure data is always present in DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTimeline();
+        });
+    </script>
+</body>
+</html>
